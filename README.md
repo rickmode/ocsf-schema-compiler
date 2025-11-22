@@ -53,10 +53,10 @@ The recommended way to work on OCSF projects is via a fork into your own GitHub 
 
 This project requires Python 3.14 or later, and otherwise has no runtime dependencies. This mean you can run it directly from a cloned repo's `src` directory without creating a virtual environment.
 
-I usually run with a subshell so my current directory remains in the base of the cloned repo. I also often use the [jq](https://jqlang.org/) tool to format the JSON output. For example:
 ```shell
 cd path/to/ocsf-schema-compiler
-$(cd src && python3 -m ocsf_schema_compiler ~/path/to/ocsf-schema > jq -S > ~/path/to/output/schema.json)
+cd src
+python3 -m ocsf_schema_compiler ~/path/to/ocsf-schema > ~/path/to/output/schema.json
 ```
 
 This project has regression tests in the `tests` directory built using the `unittest` library. These also can be run without a virtual environment. The tests can be run with the `Makefile` target `tests`.
@@ -88,7 +88,6 @@ source ./.venv/bin/activate
 
 pip install -e .
 ```
-
 
 Integrating Ruff with your editor is recommended. See [Editor integration | Ruff](https://docs.astral.sh/ruff/editors/).
 
