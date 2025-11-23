@@ -35,7 +35,7 @@ def json_type_from_value(value: object) -> str:
     return f"non-JSON type: {type(value).__name__}"
 
 
-# These j_* function are for type safety. They keep pyright happy.
+# These j_* function are for type safety. They keep Pyright happy.
 # The assertion error messages are given in terms of JSON types, mostly.
 # JSON does not have a integer type, though we have j_integer rather than a more
 # general j_number.
@@ -55,24 +55,6 @@ def j_object_optional(v: JValue) -> JObject | None:
         f"j_object: expected object or null but got {json_type_from_value(v)}: {v}"
     )
     return v
-
-
-# TODO
-# def j_array(v: JValue) -> JArray:
-#     """Ensures value v is a JArray (list or tuple) and returns it."""
-#     assert isinstance(v, list) or isinstance(v, tuple), (
-#         f"j_array: expected array but got {json_type_from_value(v)}: {v}"
-#     )
-#     return v
-
-
-# TODO
-# def j_array_optional(v: JValue) -> JArray | None:
-#     """Ensures value v is a JArray (list or tuple) or None and returns it."""
-#     assert v is None or isinstance(v, list) or isinstance(v, tuple), (
-#         f"j_array: expected array or null but got {json_type_from_value(v)}: {v}"
-#     )
-#     return v
 
 
 def j_array(v: JValue) -> JArray:

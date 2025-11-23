@@ -1779,8 +1779,7 @@ class SchemaCompiler:
                 if self.browser_mode:
                     patched_by = j_array(base.setdefault("_patched_by_extensions", []))
                     patched_by.append(j_string(patch["extension"]))
-                    # Pyright doesn't know how to handle list sort()
-                    patched_by.sort()  # pyright: ignore[reportCallIssue]
+                    patched_by.sort(key=lambda v: j_string(v))
 
     def _merge_attributes(
         self, dest_attributes: JObject, source_attributes: JObject, context: str
@@ -1850,9 +1849,8 @@ class SchemaCompiler:
                     dest_profiles = j_array(dest_attribute["profiles"])
                     source_profiles = j_array(source_value)
                     merged = set(dest_profiles) | set(source_profiles)
-                    # Pyright doesn't know how to handle sorted()
                     dest_attribute["profiles"] = j_array(
-                        sorted(merged)  # pyright: ignore[reportArgumentType, reportUnknownArgumentType]
+                        sorted(merged, key=lambda v: j_string(v))
                     )
                 else:
                     dest_attribute["profiles"] = j_array(source_value)
@@ -1893,8 +1891,7 @@ class SchemaCompiler:
         merged = dest_profiles.union(source_profiles)
         if merged:  # avoid adding "profiles" if neither base nor patch had any
             # sorts and converts to list (otherwise profiles are randomly sorted)
-            # Pyright doesn't know how to deal with sorted
-            dest["profiles"] = sorted(merged)  # pyright: ignore[reportArgumentType]
+            dest["profiles"] = sorted(merged, key=lambda v: j_string(v))
 
     @staticmethod
     def _patch_constraints(base: JObject, patch: JObject) -> None:
@@ -2304,26 +2301,22 @@ class SchemaCompiler:
         """
         self._consolidate_profiles("class", self._classes)
 
-    @staticmethod
-    def _j_value_to_str_list(v: JValue) -> list[str] | None:
-        assert v is None or isinstance(v, list)
-        return v  # pyright: ignore[reportReturnType]
-
-    @staticmethod
-    def _str_list_to_j_value(v: list[str]) -> JValue:
-        return v  # pyright: ignore[reportReturnType]
+    # ProfilesDict is a mapping from class or object name to list of profiles or None
+    # We really prefer to list[str] rather than JArray (list[JValue]), however JArray
+    # works better with the types used here, and keeps Pyright happy.
+    type ProfilesDict = dict[str, JArray | None]
 
     def _consolidate_profiles(self, group: str, items: JObject) -> None:
         for item_name, item in items.items():
             item = j_object(item)
-            profiles_dict: dict[str, list[str] | None] = {}
+            profiles_dict: SchemaCompiler.ProfilesDict = {}
             try:
                 if group == "class":
                     # The recursive step is for objects. For classes, we need to do the
                     # first step here.
                     if "profiles" in item:
                         # Use prefix for class so it does not collide with object names
-                        item_profiles = self._j_value_to_str_list(item["profiles"])
+                        item_profiles = j_array(item["profiles"])
                         profiles_dict[f"class:{item_name}"] = item_profiles
 
                     item_attributes = j_object(item.setdefault("attributes", {}))
@@ -2345,20 +2338,19 @@ class SchemaCompiler:
                     f'Consolidating profiles of {group} "{item_name}" failed: {e}'
                 ) from e
 
-            all_profiles: set[str] = set()
+            all_profiles: set[JValue] = set()
             for profile_list in profiles_dict.values():
                 if profile_list:
                     all_profiles.update(profile_list)
 
             if all_profiles:
-                sorted_profiles = sorted(all_profiles)
+                sorted_profiles = sorted(all_profiles, key=lambda v: j_string(v))
                 if logger.isEnabledFor(logging.DEBUG):
                     items_with_profiles: JArray = []
                     for profile_name, profile_list in profiles_dict.items():
                         if profile_list:
                             items_with_profiles.append(profile_name)
-                    # Pyright doesn't handle sort
-                    items_with_profiles.sort()  # pyright: ignore[reportCallIssue]
+                    items_with_profiles.sort(key=lambda v: j_string(v))
                     original_profiles = item.get("profiles")
                     if sorted_profiles == original_profiles:
                         logger.debug(
@@ -2378,14 +2370,14 @@ class SchemaCompiler:
                             items_with_profiles,
                             sorted_profiles,
                         )
-                item["profiles"] = self._str_list_to_j_value(sorted_profiles)
+                item["profiles"] = j_array(sorted_profiles)
             else:
                 logger.debug(
                     'Consolidated profiles of %s "%s": no profiles.', group, item_name
                 )
 
     def _gather_profiles(
-        self, obj_name: str, profiles_dict: dict[str, list[str] | None]
+        self, obj_name: str, profiles_dict: SchemaCompiler.ProfilesDict
     ) -> None:
         """
         Gather profiles from obj_name object (if any) and its attributes that are object
@@ -2400,7 +2392,7 @@ class SchemaCompiler:
 
         # We specifically want actual and None values since profiles_dict is doing both
         # gathering profiles and marking things that have been processed.
-        profiles_dict[obj_name] = self._j_value_to_str_list(obj.get("profiles"))
+        profiles_dict[obj_name] = j_array_optional(obj.get("profiles"))
 
         obj_attributes = j_object(obj.setdefault("attributes", {}))
         for attribute_name, attribute in obj_attributes.items():
@@ -2499,8 +2491,7 @@ class SchemaCompiler:
                 if "datetime" not in profiles:
                     profiles.append("datetime")
                     # keep profiles sorted
-                    # Pyright doesn't deal with sort
-                    profiles.sort()  # pyright: ignore[reportCallIssue]
+                    profiles.sort(key=lambda v: j_string(v))
 
     def _ensure_attributes_have_requirement(self) -> None:
         # Track attributes in profiles, classes, and objects that incorrectly do _not_

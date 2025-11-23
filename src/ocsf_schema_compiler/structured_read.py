@@ -16,7 +16,7 @@ def read_json_object_file(path: Path) -> JObject:
     with open(path) as f:
         v = json.load(f)  # pyright: ignore[reportAny]
         if not isinstance(v, dict):
-            t = json_type_from_value(v)
+            t = json_type_from_value(v)  # pyright: ignore[reportAny]
             raise TypeError(
                 f"Schema file contains a JSON {t} value, but should contain an object:"
                 f" {path}"

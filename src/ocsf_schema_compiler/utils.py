@@ -1,5 +1,4 @@
 import json
-from typing import Any
 from copy import deepcopy
 
 from ocsf_schema_compiler.exceptions import SchemaException
@@ -75,7 +74,7 @@ def class_uid_scoped_type_uid(cls_uid: int, type_uid: int) -> int:
     return cls_uid * 100 + type_uid
 
 
-def pretty_json_encode(v: Any) -> str:  # pyright: ignore[reportAny, reportExplicitAny]
+def pretty_json_encode(v: object) -> str:
     return json.dumps(v, indent=4, sort_keys=True)
 
 
