@@ -4,6 +4,7 @@ tests:
 
 lint:
 	ruff check
+	pyright
 	ruff format --check --diff
 
 clean:

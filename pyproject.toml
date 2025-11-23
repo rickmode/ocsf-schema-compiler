@@ -62,3 +62,10 @@ extend-select = ["E501", "W505"]
 [tool.ruff.lint.pycodestyle]
 # max-doc-length = 88
 ignore-overlong-task-comments = false
+
+# I use the basedpyright plugin with vscodium
+[tool.basedpyright]
+# Not sure if implicit string concatenation is a great idea,
+# but I prefer to keep all code lines below the line-length maximum
+# (and I've configured ruff lint to enforce this).
+reportImplicitStringConcatenation = false

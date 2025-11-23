@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Callable, Any
+from typing import Any, Callable
 
 from ocsf_schema_compiler.exceptions import SchemaException
 
@@ -15,10 +15,10 @@ type JValue = JObject | JArray | str | int | float | bool | None
 # JObject is a type alias for dictionary compatible with a JSON object.
 type JObject = dict[str, JValue]
 # JArray is a type alias for types compatible with a JSON array.
-type JArray = list[JValue] | tuple[JValue]
+type JArray = list[JValue]  # TODO | tuple[JValue]
 
 
-def json_type_from_value(value: Any) -> str:
+def json_type_from_value(value: Any) -> str:  # pyright: ignore[reportExplicitAny, reportAny]
     """
     Return JSON type for a Python value. See https://json.org.
     This is intended for error messages.
@@ -30,7 +30,7 @@ def json_type_from_value(value: Any) -> str:
     if isinstance(value, str):
         return "string"
     if isinstance(value, int):
-        return "number (int)"
+        return "number (integer)"
     if isinstance(value, float):
         return "number (float)"
     if isinstance(value, bool):
@@ -39,23 +39,105 @@ def json_type_from_value(value: Any) -> str:
         return "false"
     if value is None:
         return "null"
-    return f"non-JSON type: {type(value).__name__}"
+    return f"non-JSON type: {type(value).__name__}"  # pyright: ignore[reportAny]
+
+
+# These j_* function are for type safety. They keep pyright happy.
+# The assertion error messages are given in terms of JSON types, mostly.
+# JSON does not have a integer type, though we have j_integer rather than a more
+# general j_number.
+
+
+def j_object(v: JValue) -> JObject:
+    """Ensures value v is a JObject (dict) and returns it."""
+    assert isinstance(v, dict), (
+        f"j_object: expected object but got {json_type_from_value(v)}: {v}"
+    )
+    return v
+
+
+def j_object_optional(v: JValue) -> JObject | None:
+    """Ensures value v is a JObject (dict) or None and returns it."""
+    assert v is None or isinstance(v, dict), (
+        f"j_object: expected object or null but got {json_type_from_value(v)}: {v}"
+    )
+    return v
+
+
+# TODO
+# def j_array(v: JValue) -> JArray:
+#     """Ensures value v is a JArray (list or tuple) and returns it."""
+#     assert isinstance(v, list) or isinstance(v, tuple), (
+#         f"j_array: expected array but got {json_type_from_value(v)}: {v}"
+#     )
+#     return v
+
+
+# TODO
+# def j_array_optional(v: JValue) -> JArray | None:
+#     """Ensures value v is a JArray (list or tuple) or None and returns it."""
+#     assert v is None or isinstance(v, list) or isinstance(v, tuple), (
+#         f"j_array: expected array or null but got {json_type_from_value(v)}: {v}"
+#     )
+#     return v
+
+
+def j_array(v: JValue) -> JArray:
+    """Ensures value v is a JArray (list) and returns it."""
+    assert isinstance(v, list), (
+        f"j_array: expected array but got {json_type_from_value(v)}: {v}"
+    )
+    return v
+
+
+def j_array_optional(v: JValue) -> JArray | None:
+    """Ensures value v is a JArray (list) or None and returns it."""
+    assert v is None or isinstance(v, list), (
+        f"j_array: expected array or null but got {json_type_from_value(v)}: {v}"
+    )
+    return v
+
+
+def j_string(v: JValue) -> str:
+    """Ensures value v is a string and returns it."""
+    assert isinstance(v, str), (
+        f"j_string: expected string but got {json_type_from_value(v)}: {v}"
+    )
+    return v
+
+
+def j_string_optional(v: JValue) -> str | None:
+    """Ensures value v is a string or None and returns it."""
+    assert v is None or isinstance(v, str), (
+        f"j_string: expected string or null but got {json_type_from_value(v)}: {v}"
+    )
+    return v
+
+
+def j_integer(v: JValue) -> int:
+    """Ensures value v is an integer and returns it."""
+    assert isinstance(v, int), (
+        f"j_integer: expected integer number but got {json_type_from_value(v)}: {v}"
+    )
+    return v
 
 
 def read_json_object_file(path: Path) -> JObject:
     with open(path) as f:
-        v = json.load(f)
+        v = json.load(f)  # pyright: ignore[reportAny]
         if not isinstance(v, dict):
             t = json_type_from_value(v)
             raise TypeError(
                 f"Schema file contains a JSON {t} value, but should contain an object:"
                 f" {path}"
             )
-        return v
+        return v  # pyright: ignore[reportUnknownVariableType]
 
 
 def read_structured_items(
-    base_path: Path, kind: str, item_callback_fn: Callable[[Path, JObject], None] = None
+    base_path: Path,
+    kind: str,
+    item_callback_fn: Callable[[Path, JObject], None] | None = None,
 ) -> JObject:
     """
     Read schema structured items found in `kind` directory under `base_path`,
@@ -65,8 +147,8 @@ def read_structured_items(
     # event classes can be organized in subdirectories, so we must walk to find all the
     # event class JSON files
     item_path = base_path / kind
-    items = {}
-    for dir_path, dir_names, file_names in os.walk(item_path, topdown=False):
+    items: JObject = {}
+    for dir_path, _dir_names, file_names in os.walk(item_path, topdown=False):
         for file_name in file_names:
             if file_name.endswith(".json"):
                 file_path = Path(dir_path, file_name)
@@ -90,7 +172,7 @@ def read_structured_items(
                     )
 
                 if name in items:
-                    existing = items[name]
+                    existing = j_object(items[name])
                     raise SchemaException(
                         f'Collision of "name" in {kind} file: "{name}" with caption'
                         f' "{obj.get("caption", "")}", collides with {kind} with'
@@ -105,7 +187,9 @@ def read_structured_items(
 
 
 def read_patchable_structured_items(
-    base_path: Path, kind: str, item_callback_fn: Callable[[Path, JObject], None] = None
+    base_path: Path,
+    kind: str,
+    item_callback_fn: Callable[[Path, JObject], None] | None = None,
 ) -> tuple[JObject, JObject]:
     """
     Read schema "patchable" structured items found in `kind` directory under
@@ -118,9 +202,9 @@ def read_patchable_structured_items(
     # event classes can be organized in subdirectories, so we must walk to find all the
     # event class JSON files
     item_path = base_path / kind
-    items = {}
-    patches = {}
-    for dir_path, dir_names, file_names in os.walk(item_path, topdown=False):
+    items: JObject = {}
+    patches: JObject = {}
+    for dir_path, _dir_names, file_names in os.walk(item_path, topdown=False):
         for file_name in file_names:
             if file_name.endswith(".json"):
                 file_path = Path(dir_path, file_name)
@@ -144,12 +228,12 @@ def read_patchable_structured_items(
                     )
 
                 # Ensure values are strings
-                if name and not isinstance(name, str):
+                if name is not None and not isinstance(name, str):
                     raise SchemaException(
                         f'The "name" value in extension {kind} file must be a string,'
                         f" but got {json_type_from_value(name)}: {file_path}"
                     )
-                if extends and not isinstance(extends, str):
+                if extends is not None and not isinstance(extends, str):
                     raise SchemaException(
                         f'The "extends" value in extension {kind} file must be a'
                         f" string, but got {json_type_from_value(extends)}: {file_path}"
@@ -159,9 +243,9 @@ def read_patchable_structured_items(
                     # This is a patch definition.
                     # An extension event class or object is a patch when it only defines
                     # "extends" or when "name" and "extends" have the same value. This
-                    patch_name = extends  # use patch_name for clarity
+                    patch_name = j_string(extends)  # use patch_name for clarity
                     if patch_name in patches:
-                        existing = patches[patch_name]
+                        existing = j_object(patches[patch_name])
                         raise SchemaException(
                             f'Collision of patch name ("extends" key) in extension'
                             f' {kind} file: "{patch_name}" with caption'
@@ -176,7 +260,7 @@ def read_patchable_structured_items(
                 else:
                     # This is a normal definition.
                     if name in items:
-                        existing = items[name]
+                        existing = j_object(items[name])
                         raise SchemaException(
                             f'Collision of "name" in extension {kind} file: "{name}"'
                             f' with caption "{obj.get("caption", "")}", collides with'

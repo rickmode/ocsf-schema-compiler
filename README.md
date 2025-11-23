@@ -64,7 +64,7 @@ This project has regression tests in the `tests` directory built using the `unit
 make tests
 ```
 
-This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and code formatting. Ruff's formatting is very similar to Black with some minor differences (improvements, in my opinion). This requires a virtual environment with both installed. With the virtual environment activated the linting and formatting can be run with the `Makefile` target `lint`.
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and code formatting and [Pyright](https://microsoft.github.io/pyright) for type checking. Ruff's formatting is very similar to Black with some minor differences (improvements, in my opinion). These require a virtual environment with both installed. With the virtual environment activated the linting and formatting can be run with the `Makefile` target `lint`.
 
 This project's `.gitignore` assumes the virtual environment is at `.venv`.
 
@@ -74,7 +74,7 @@ python3 -m venv .venv
 source ./.venv/bin/activate
 
 # Install the tools
-pip install ruff
+pip install ruff pyright
 
 # Now the lint target will work
 make lint

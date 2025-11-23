@@ -43,8 +43,8 @@ class Difference:
 
 def formatted_diffs(diffs: list[Difference]) -> str:
     # Show unexpected before expected
-    unexpected_diffs = []
-    expected_diffs = []
+    unexpected_diffs: list[str] = []
+    expected_diffs: list[str] = []
     for diff in diffs:
         if diff.is_expected:
             expected_diffs.append(diff.formatted_string())
@@ -59,9 +59,9 @@ type DiffCallback = Callable[
 
 
 def diff_objects(
-    obj1: JObject, obj2: JObject, diff_callback: DiffCallback = None
+    obj1: JObject, obj2: JObject, diff_callback: DiffCallback | None = None
 ) -> tuple[bool, list[Difference]]:
-    diffs = []
+    diffs: list[Difference] = []
     _diff_objects(obj1, obj2, diff_callback, [], diffs)
     ok = True
     for diff in diffs:
@@ -74,7 +74,7 @@ def diff_objects(
 def _diff_objects(
     obj1: JObject,
     obj2: JObject,
-    diff_callback: DiffCallback,
+    diff_callback: DiffCallback | None,
     base_path: list[str],
     diffs: list[Difference],
 ) -> None:
