@@ -4,21 +4,31 @@ import unittest
 from compression import zstd
 from pathlib import Path
 from sys import stderr
+from typing import override
 
-from diff import diff_objects, formatted_diffs, DiffValue, DiffDictKeys, MISSING
+from diff import (  # pyright: ignore[reportImplicitRelativeImport]
+    diff_objects,
+    formatted_diffs,
+    DiffValue,
+    DiffDictKeys,
+    MISSING,
+)
 from ocsf_schema_compiler.compiler import SchemaCompiler
-from ocsf_schema_compiler.jsonish import read_json_object_file, JObject
+from ocsf_schema_compiler.jsonish import JObject
+from ocsf_schema_compiler.structured_read import read_json_object_file
 
 BASE_DIR = Path(__file__).parent
 
 
 class TestRegressions(unittest.TestCase):
     @classmethod
+    @override
     def setUpClass(cls):
         logging.basicConfig(
             format="%(levelname)s: %(message)s", style="%", stream=stderr, level="INFO"
         )
 
+    @override
     def setUp(self):
         print(file=stderr)  # so logs start on new line
 

@@ -1,14 +1,22 @@
 import json
 from typing import Any
+from copy import deepcopy
 
 from ocsf_schema_compiler.exceptions import SchemaException
-from ocsf_schema_compiler.jsonish import JObject
+from ocsf_schema_compiler.jsonish import JValue, JObject, JArray
 
 
-# Pyright is not friends with arbitrary arguments, which appear all over this file
+def deep_copy_j_object(obj: JObject) -> JObject:
+    """JObject typed flavor of copy.deepcopy. Returns deep copy of obj."""
+    return deepcopy(obj)
 
 
-def deep_merge(dest: Any, source: Any) -> None:  # pyright: ignore[reportAny, reportExplicitAny]
+def deep_copy_j_array(array: JArray) -> JArray:
+    """JArray typed flavor of copy.deepcopy. Returns deep copy of array."""
+    return deepcopy(array)
+
+
+def deep_merge(dest: JObject, source: JObject) -> None:
     """
     In-place merge a source dictionary into a destination dictionary, modifying the
     destination dictionary.
@@ -16,20 +24,20 @@ def deep_merge(dest: Any, source: Any) -> None:  # pyright: ignore[reportAny, re
     Note: this merge does not merge lists or deep merge dictionaries inside lists. List
     values are simply overwritten.
     """
-    if isinstance(dest, dict) and isinstance(source, dict):
-        for source_key, source_value in source.items():  # pyright: ignore[reportUnknownVariableType]
-            if source_key in dest:
-                dest_value = dest[source_key]  # pyright: ignore[reportUnknownVariableType]
-                if isinstance(dest_value, dict) and isinstance(source_value, dict):
-                    deep_merge(dest_value, source_value)
-                else:
-                    # This replaces dest[source_key] with source_value
-                    dest[source_key] = source_value
+
+    for source_key, source_value in source.items():
+        if source_key in dest:
+            dest_value = dest[source_key]
+            if isinstance(dest_value, dict) and isinstance(source_value, dict):
+                deep_merge(dest_value, source_value)
             else:
+                # This replaces dest[source_key] with source_value
                 dest[source_key] = source_value
+        else:
+            dest[source_key] = source_value
 
 
-def put_non_none(d: dict[Any, Any], k: Any, v: Any) -> None:  # pyright: ignore[reportAny, reportExplicitAny]
+def put_non_none(d: JObject, k: str, v: JValue) -> None:
     if v is not None:
         d[k] = v
 

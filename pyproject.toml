@@ -68,4 +68,9 @@ ignore-overlong-task-comments = false
 # Not sure if implicit string concatenation is a great idea,
 # but I prefer to keep all code lines below the line-length maximum
 # (and I've configured ruff lint to enforce this).
+# TODO: Consider converting to explicit string concatenation
+#       print(
+#           "This is a long"
+#           + " string"
+#       )
 reportImplicitStringConcatenation = false

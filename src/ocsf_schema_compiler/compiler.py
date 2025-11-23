@@ -1,6 +1,5 @@
 import logging
 import os
-from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
@@ -18,15 +17,19 @@ from ocsf_schema_compiler.jsonish import (
     j_string_optional,
     j_integer,
     json_type_from_value,
-    read_json_object_file,
-    read_structured_items,
-    read_patchable_structured_items,
 )
 from ocsf_schema_compiler.legacy_mode import (
     add_extension_scope_to_items,
     add_extension_scope_to_dictionary,
 )
+from ocsf_schema_compiler.structured_read import (
+    read_json_object_file,
+    read_structured_items,
+    read_patchable_structured_items,
+)
 from ocsf_schema_compiler.utils import (
+    deep_copy_j_object,
+    deep_copy_j_array,
     deep_merge,
     put_non_none,
     is_hidden_class,
@@ -240,7 +243,6 @@ class SchemaCompiler:
         return output
 
     def _warning(self, message: str, *args: JValue | Path) -> None:
-        # Pyright is not friends with arbitrary arguments like *args and **kwargs
         self._warning_count += 1
         logger.warning(message, *args)
 
@@ -879,7 +881,7 @@ class SchemaCompiler:
         # attributes resulting in merge with base of included attributes, overridden by
         # item's.
 
-        attributes = j_object(deepcopy(include_item["attributes"]))
+        attributes = deep_copy_j_object(j_object(include_item["attributes"]))
 
         # First do profile-specific enrichment if include is a profile, and annotation
         # enrichment for all include cases (even though currently only profiles use
@@ -928,7 +930,7 @@ class SchemaCompiler:
         # attribute's details on top of included attribute details resulting in merge
         # with base of included details overridden by item's.
 
-        new_attribute = deepcopy(include_attribute)
+        new_attribute = deep_copy_j_object(include_attribute)
 
         # Merge original attribute detail on top of the copy of the included
         # attribute_detail, preferring the original
@@ -1329,7 +1331,7 @@ class SchemaCompiler:
                     enum_key = str(
                         class_uid_scoped_type_uid(cls_uid, int(activity_enum_key))
                     )
-                    enum_value = j_object(deepcopy(activity_enum_value))
+                    enum_value = deep_copy_j_object(j_object(activity_enum_value))
                     enum_value["caption"] = (
                         f"{cls_caption}:"
                         f" {activity_enum_value.get('caption', '<unknown>')}"
@@ -1380,7 +1382,7 @@ class SchemaCompiler:
                 # Doing ths prevents including base_event's 0 - Uncategorized enum.
                 enum = {}
                 category_uid_key = str(category_uid)
-                enum[category_uid_key] = deepcopy(category)
+                enum[category_uid_key] = deep_copy_j_object(category)
                 category_uid_attribute["enum"] = enum
 
                 category_name_attribute = j_object(
@@ -1848,7 +1850,7 @@ class SchemaCompiler:
                     dest_profiles = j_array(dest_attribute["profiles"])
                     source_profiles = j_array(source_value)
                     merged = set(dest_profiles) | set(source_profiles)
-                    # Pyright doesn't know how to deal with sorted
+                    # Pyright doesn't know how to handle sorted()
                     dest_attribute["profiles"] = j_array(
                         sorted(merged)  # pyright: ignore[reportArgumentType, reportUnknownArgumentType]
                     )
@@ -1880,7 +1882,7 @@ class SchemaCompiler:
                 ):
                     # TODO: Detect collisions? Perhaps with overwrite flag in
                     #       utils.deep_merge?
-                    deep_merge(dest_attribute[source_key], source_value)
+                    deep_merge(j_object(dest_attribute[source_key]), source_value)
                 else:
                     dest_attribute[source_key] = source_value
 
@@ -1927,12 +1929,12 @@ class SchemaCompiler:
         )
 
         if parent_name:
-            parent_item = items.get(parent_name)
+            parent_item = j_object_optional(items.get(parent_name))
             if parent_item:
                 # Create flattened item by merging item on top of a copy of it's parent
                 # with the result that new and overlapping things in item "win" over
                 # those in parent. This new item replaces the existing one.
-                new_item = j_object(deepcopy(parent_item))
+                new_item = deep_copy_j_object(parent_item)
                 # The values of most keys simply replace what is in the parent, except
                 # for attributes and profiles
                 for source_key, source_value in item.items():
@@ -2023,7 +2025,7 @@ class SchemaCompiler:
 
                 # Create copy of link to avoid polluting original in case at least one
                 # attribute is an object type.
-                attribute_link = deepcopy(link)
+                attribute_link = deep_copy_j_object(link)
                 # attribute_keys is only used to track the different attribute name uses
                 # of object types. We don't track the various attribute names that use
                 # dictionary types.
@@ -2126,7 +2128,7 @@ class SchemaCompiler:
             for attribute_name, attribute in dictionary_attributes.items():
                 attribute = j_object(attribute)
                 if attribute.get("type") == "timestamp_t":
-                    sibling = deepcopy(attribute)
+                    sibling = deep_copy_j_object(attribute)
                     # No need to fix up attribute_keys as they are not used for
                     # dictionary types
                     sibling["type"] = "datetime_t"
@@ -2244,7 +2246,7 @@ class SchemaCompiler:
             for attribute in dictionary_attributes.values():
                 attribute = j_object(attribute)
                 if attribute.get("object_type") == obj_name and "_links" in attribute:
-                    attribute_links = j_array(deepcopy(attribute["_links"]))
+                    attribute_links = deep_copy_j_array(j_array(attribute["_links"]))
                     links.extend(attribute_links)
 
             # Group by group and type and merge attribute_keys
@@ -2481,7 +2483,7 @@ class SchemaCompiler:
                     else:
                         attribute_type = dictionary_attribute.get("type")
                     if attribute_type == "timestamp_t":
-                        dt_attribute = deepcopy(attribute)
+                        dt_attribute = deep_copy_j_object(attribute)
                         if self.legacy_mode:
                             dt_attribute["profile"] = "datetime"
                         else:
@@ -2602,12 +2604,17 @@ class SchemaCompiler:
                 #     " attribute; this should have been caught earlier in the compile"
                 #     " process"
                 # )
-                # new_attribute = deepcopy(dictionary_attributes[attribute_name])
+                # new_attribute = deep_copy_j_object(
+                #     j_object(dictionary_attributes[attribute_name])
+                # )
                 # deep_merge(new_attribute, attribute)
                 # new_attributes[attribute_name] = new_attribute
                 # TODO: End of what this block of code should eventually look like
+                attribute = j_object(attribute)
                 if attribute_name in dictionary_attributes:
-                    new_attribute = deepcopy(dictionary_attributes[attribute_name])
+                    new_attribute = deep_copy_j_object(
+                        j_object(dictionary_attributes[attribute_name])
+                    )
                     deep_merge(new_attribute, attribute)
                     new_attributes[attribute_name] = new_attribute
                 else:

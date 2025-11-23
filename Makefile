@@ -7,6 +7,11 @@ lint:
 	pyright
 	ruff format --check --diff
 
+lint-github:
+	ruff check --output-format=github
+	pyright
+	ruff format --check --diff --output-format=github
+
 clean:
 	rm -rf dist
 	rm -rf src/ocsf_schema_compiler.egg-info
