@@ -1,0 +1,32 @@
+name: Continuous integration
+# Steps use Makefile for consistency with local development
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
+      with:
+        python-version: "3.14"
+
+    - name: Run tests
+      run: make tests
+
+    - name: Lint
+      run: |
+        python -m pip install ruff pyright
+        make lint-github
+
+    - name: Check distribution
+      run: |
+        python -m pip install build twine
+        make dist-check

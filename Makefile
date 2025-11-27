@@ -3,14 +3,21 @@ tests:
 	cd src && python3 -m unittest discover -v -s ../tests
 
 lint:
+	# Requires ruff and pyright: python -m pip install build twine
 	ruff check
 	pyright
 	ruff format --check --diff
 
 lint-github:
+	# Requires ruff and pyright: python -m pip install build twine
 	ruff check --output-format=github
 	pyright
-	ruff format --check --diff --output-format=github
+	ruff format --check --diff
+
+dist-check:
+	# Requires build and twine: python -m pip install build twine
+	python -m build
+	twine check dist/*
 
 clean:
 	rm -rf dist
