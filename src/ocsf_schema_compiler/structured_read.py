@@ -1,7 +1,8 @@
 import json
 import os
+from compression import zstd
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from ocsf_schema_compiler.exceptions import SchemaException
 from ocsf_schema_compiler.jsonish import (
@@ -12,16 +13,31 @@ from ocsf_schema_compiler.jsonish import (
 )
 
 
+# _load_json_object_file loads a JSON file an ensure the result is a JSON object.
+# It also has all of the ugly Pyright annotations to deal with the loose typing of
+# open() and json.load().
+def _load_json_object_file(
+    path: Path,
+    f: Any,  # pyright: ignore[reportAny, reportExplicitAny]
+) -> JObject:
+    v: Any = json.load(f)  # pyright: ignore[reportAny, reportExplicitAny]
+    if not isinstance(v, dict):
+        t = json_type_from_value(v)  # pyright: ignore[reportAny]
+        raise TypeError(
+            f"Schema file contains a JSON {t} value, but should contain an object:"
+            f" {path}"
+        )
+    return v  # pyright: ignore[reportUnknownVariableType]
+
+
 def read_json_object_file(path: Path) -> JObject:
     with open(path) as f:
-        v = json.load(f)  # pyright: ignore[reportAny]
-        if not isinstance(v, dict):
-            t = json_type_from_value(v)  # pyright: ignore[reportAny]
-            raise TypeError(
-                f"Schema file contains a JSON {t} value, but should contain an object:"
-                f" {path}"
-            )
-        return v  # pyright: ignore[reportUnknownVariableType]
+        return _load_json_object_file(path, f)
+
+
+def read_json_object_zstandard_file(path: Path) -> JObject:
+    with zstd.open(path) as f:
+        return _load_json_object_file(path, f)
 
 
 def read_structured_items(

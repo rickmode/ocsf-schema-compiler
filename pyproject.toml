@@ -56,13 +56,17 @@ push = false
 # E501 includes long strings in line-length checks.
 #      https://docs.astral.sh/ruff/rules/line-too-long/
 # W505 includes long comments in line-length checks when enabled by setting below
-#      https://docs.astral.sh/ruff/rules/doc-line-too-long/     
+#      https://docs.astral.sh/ruff/rules/doc-line-too-long/
 extend-select = ["E501", "W505"]
 
 [tool.ruff.lint.pycodestyle]
 ignore-overlong-task-comments = false
 
-[tool.basedpyright]  # I use the basedpyright plugin with vscodium
+# This project uses basedpyright rather than pyright. This is for two reasons:
+#   1. I uses vscodium, and the M$ proprietary PyLance extension does not work in
+#      vscodium. The basedpyright extension is the current best alternative.
+#   2. The rules and defaults in basedpyright are bit more strict.
+[tool.basedpyright]
 # Not sure if implicit string concatenation is a great idea,
 # but I prefer to keep all code lines below the line-length maximum
 # (and ruff lint is configured above to enforce this).

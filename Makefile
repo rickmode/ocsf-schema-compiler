@@ -3,15 +3,15 @@ tests:
 	cd src && python3 -m unittest discover -v -s ../tests
 
 lint:
-	# Requires ruff and pyright: python -m pip install build twine
+	# Requires ruff and basedpyright: python -m pip install ruff basedpyright
 	ruff check
-	pyright
+	basedpyright
 	ruff format --check --diff
 
 lint-github:
-	# Requires ruff and pyright: python -m pip install build twine
+	# Requires ruff and basedpyright: python -m pip install ruff basedpyright
 	ruff check --output-format=github
-	pyright
+	basedpyright
 	ruff format --check --diff
 
 dist-check:
@@ -19,14 +19,19 @@ dist-check:
 	python -m build
 	twine check dist/*
 
-clean:
+clean-dist:
 	rm -rf dist
 	rm -rf src/ocsf_schema_compiler.egg-info
+
+clean: clean-dist
 	rm -rf .ruff_cache
 	find src tests \
 		-type d -name __pycache__ -delete \
 		-or -type f -name '*.py[cod]' -delete \
 		-or -type f -name '*$py.class' -delete
+
+clean-all: clean
+	rm -rf .venv
 
 cloc:
 	cloc --exclude-dir=.venv,.idea .

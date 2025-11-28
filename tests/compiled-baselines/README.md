@@ -10,9 +10,9 @@ pip install -e .
 ocsf-schema-compiler tests/uncompiled-schemas/ocsf-schema-v1.6.0 | jq -S > tests/compiled-baselines/schema-v1.6.0.json
 
 # Using jq with the browser mode variation leads to a file that exceeds GitHub 100MB limit.
-# Also compress with zstd (available on Mac with Homebrew) to get below GitHub LFS.
-# Browser schema tests will look for JSON compiled to *.zst files instead *.json files.
-ocsf-schema-compiler tests/uncompiled-schemas/ocsf-schema-v1.6.0 -b | zstd > tests/compiled-baselines/uncompressed/browser-schema-v1.6.0.zst
+# Also compress with zstd (available on Mac with Homebrew) to get below GitHub's LFS warning.
+# Browser schema tests will look for compressed JSON *.zst files instead plain *.json files.
+ocsf-schema-compiler tests/uncompiled-schemas/ocsf-schema-v1.6.0 -b | zstd > tests/compiled-baselines/browser-schema-v1.6.0.zst
 
 ocsf-schema-compiler tests/uncompiled-schemas/ocsf-schema-v1.6.0 -e tests/uncompiled-schemas/aws-v1.0.0 | jq -S > tests/compiled-baselines/browser-schema-v1.6.0-aws-v1.0.0.json
 

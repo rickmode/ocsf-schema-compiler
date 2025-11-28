@@ -2007,6 +2007,14 @@ class SchemaCompiler:
             link["deprecated?"] = True
         return link
 
+    @staticmethod
+    def _sort_links(links: JArray) -> None:
+        def link_to_key(link: JValue) -> tuple[str, str]:
+            link = j_object(link)
+            return j_string(link["group"]), j_string(link["type"])
+
+        links.sort(key=link_to_key)
+
     def _add_links_to_dictionary_attributes(
         self, kind: str, item_name: str, item: JObject, link: JObject
     ) -> None:
@@ -2030,6 +2038,7 @@ class SchemaCompiler:
                     attribute_link["attribute_keys"] = [item_attribute_name]
                 links = j_array(dictionary_attribute.setdefault("_links", []))
                 links.append(attribute_link)
+                self._sort_links(links)
             else:
                 raise SchemaException(
                     f'{kind} "{item_name}" uses undefined attribute'
@@ -2231,6 +2240,7 @@ class SchemaCompiler:
                         link = self._make_link(group, item_name, item)
                         links = j_array(profile.setdefault("_links", []))
                         links.append(link)
+                        self._sort_links(links)
 
     def _add_object_links(self) -> None:
         if not self.browser_mode:
@@ -2260,8 +2270,10 @@ class SchemaCompiler:
                 else:
                     grouped_links[group_key] = link
 
-            # final result is the values of the grouped_link dict
-            obj["_links"] = list(grouped_links.values())
+            # The final result is the values of the grouped_link dict
+            links = list(grouped_links.values())
+            self._sort_links(links)
+            obj["_links"] = links
 
     def _update_observable_enum(self) -> None:
         if "observable" in self._objects:
