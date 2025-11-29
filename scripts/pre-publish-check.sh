@@ -21,10 +21,10 @@ code_version=$(python -c 'from src.ocsf_schema_compiler.__init__ import __versio
 # Install the current package and get its version
 if [ $test_mode -eq 1 ]; then
     echo "Installing ocsf-schema-compiler from TestPyPI"
-    pip install -i https://test.pypi.org/simple ocsf-schema-compiler
+    python -m pip install -i https://test.pypi.org/simple ocsf-schema-compiler
 else
     echo "Installing ocsf-schema-compiler from PyPI"
-    pip install ocsf-schema-compiler
+    python -m pip install ocsf-schema-compiler
 fi
 last_published_version=$(ocsf-schema-compiler -v | cut -d ' ' -f 2)
 
