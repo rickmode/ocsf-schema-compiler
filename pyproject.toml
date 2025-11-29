@@ -34,7 +34,7 @@ Issues = "https://github.com/ocsf/ocsf-schema-compiler/issues"
 ocsf-schema-compiler = "ocsf_schema_compiler.__main__:main"
 
 [project.optional-dependencies]
-dev = ["bumpver", "ruff"]
+dev = ["bumpver", "ruff", "basedpyright"]
 
 [tool.bumpver]
 current_version = "0.9.2"
