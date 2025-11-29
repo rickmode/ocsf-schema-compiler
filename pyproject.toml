@@ -1,16 +1,15 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.11,<4"]
+build-backend = "flit_core.buildapi"
 
 [project]
-name = "ocsf-schema-compiler"
-version = "0.9.2"
-description = "Compile an Open Cybersecurity Schema Framework (OCSF) schema"
+name = "ocsf_schema_compiler"
+authors = [{name = "Rick Mouritzen", email = "rick@rickmode.com"}]
 readme = "README.md"
-authors = [{ name = "Rick Mouritzen", email = "rick@rickmode.com" }]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-keywords = ["compiler", "ocsf", "ocsf-schema", "schema"]
+dynamic = ["version", "description"]
+keywords = ["compiler", "ocsf", "schema", "ocsf-schema"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -26,7 +25,7 @@ classifiers = [
 requires-python = ">= 3.14"
 
 [project.urls]
-Homepage = "https://github.com/ocsf/ocsf-schema-compiler"
+Home = "https://github.com/ocsf/ocsf-schema-compiler"
 Repository = "https://github.com/ocsf/ocsf-schema-compiler.git"
 Issues = "https://github.com/ocsf/ocsf-schema-compiler/issues"
 
@@ -34,33 +33,7 @@ Issues = "https://github.com/ocsf/ocsf-schema-compiler/issues"
 ocsf-schema-compiler = "ocsf_schema_compiler.__main__:main"
 
 [project.optional-dependencies]
-dev = ["bumpver", "ruff", "basedpyright"]
-
-[tool.bumpver]
-current_version = "0.9.2"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "Bump version {old_version} -> {new_version}"
-tag_message = "{new_version}"
-tag_scope = "default"
-pre_commit_hook = ""
-post_commit_hook = ""
-commit = true
-tag = true
-push = false
-
-[tool.bumpver.file_patterns]
-"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
-"src/ocsf_schema_compiler/__init__.py" = ["{version}"]
-
-[tool.ruff.lint]
-# E501 includes long strings in line-length checks.
-#      https://docs.astral.sh/ruff/rules/line-too-long/
-# W505 includes long comments in line-length checks when enabled by setting below
-#      https://docs.astral.sh/ruff/rules/doc-line-too-long/
-extend-select = ["E501", "W505"]
-
-[tool.ruff.lint.pycodestyle]
-ignore-overlong-task-comments = false
+dev = ["basedpyright", "ruff"]
 
 # This project uses basedpyright rather than pyright. This is for two reasons:
 #   1. I uses vscodium, and the M$ proprietary PyLance extension does not work in
@@ -76,3 +49,13 @@ ignore-overlong-task-comments = false
 #           + " string"
 #       )
 reportImplicitStringConcatenation = false
+
+[tool.ruff.lint]
+# E501 includes long strings in line-length checks.
+#      https://docs.astral.sh/ruff/rules/line-too-long/
+# W505 includes long comments in line-length checks when enabled by setting below
+#      https://docs.astral.sh/ruff/rules/doc-line-too-long/
+extend-select = ["E501", "W505"]
+
+[tool.ruff.lint.pycodestyle]
+ignore-overlong-task-comments = false
