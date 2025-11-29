@@ -2,10 +2,7 @@ name: Continuous integration
 # Steps use Makefile for consistency with local development
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+  push
 
 jobs:
   tests:
