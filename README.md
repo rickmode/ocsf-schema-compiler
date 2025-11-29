@@ -1,7 +1,7 @@
 # OCSF Schema Compiler
 This is a Python library and command-line tool for compiling the Open Cybersecurity Schema Framework (OCSF) schema, specifically the schema at https://github.com/ocsf/ocsf-schema.
 
-This project published to PyPI: [ocsf-schema-compiler · PyPI](https://pypi.org/project/ocsf-schema-compiler/)
+This project published to PyPI: [ocsf-schema-compiler · PyPI](https://pypi.org/project/ocsf-schema-compiler/).
 
 ## Getting started
 There are three ways to use the OCSF Schema Compiler:
@@ -60,14 +60,14 @@ cd src
 python3 -m ocsf_schema_compiler ~/path/to/ocsf-schema > ~/path/to/output/schema.json
 ```
 
-This project has regression tests in the `tests` directory built using the `unittest` library. These also can be run without a virtual environment so long `python3` refers to Python 3.14 or later. The tests can be run with the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) target `tests`.
+This project has regression tests in the `tests` directory built using the `unittest` library. These also can be run without a virtual environment so long as `python3` refers to Python 3.14 or later. The tests can be run with the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) target `tests`.
 ```shell
 make tests
 ```
 
 This project uses [basedpyright](https://docs.basedpyright.com/latest/) for type checking and [Ruff](https://docs.astral.sh/ruff/) for linting and code formatting.
 
-Basedpyright was picked this as an alternative to Pylance because I'm using the open-source and telemetry-free [VSCodium](https://vscodium.com/) variation of VS Code, and the Microsoft proprietary Pylance extension (part of the Python extension) does not work in VSCodium by design. Basedpyright also offers other benefits: it is strict by default and includes additional type checking rules. Extensions are available for both VSCodium and VS Code; in both cases look for "BasedPyright" by detachhead. Use in VS Code does take a little more work. I hope Pyright fans and especially VS Code users will find this workable, and perhaps consider using the privacy-focused VSCodium themselves.
+Basedpyright was picked as an alternative to Pylance because I'm using the open-source and telemetry-free [VSCodium](https://vscodium.com/) variation of VS Code, and the Microsoft proprietary Pylance extension (part of the Python extension) does not work in VSCodium by design. Basedpyright also offers other benefits: it is strict by default and includes additional type checking rules. Extensions are available for both VSCodium and VS Code; in both cases look for "BasedPyright" by detachhead. Use in VS Code does take a little more work. I hope Pyright fans and especially VS Code users will find this workable, and perhaps consider using the privacy-focused VSCodium themselves.
 
 The choice of Ruff should be less controversial: it is the current favorite for Python linting and code formatting. The formatting is very similar to [Black](https://black.readthedocs.io/en/stable/) with some minor differences (improvements, in my opinion).
 
@@ -77,9 +77,7 @@ Integrating basedpyright and Ruff with your editor is recommended. In both cases
 * [Editor integration | Ruff](https://docs.astral.sh/ruff/editors/)
 * [IDEs - basedpyright](https://docs.basedpyright.com/latest/installation/ides/)
 
-This
-
-This project's `.gitignore` assumes the virtual environment is at `.venv`.
+Note: this project's `.gitignore` assumes the virtual environment is at `.venv`.
 
 ```shell
 # A standard Python virtual environment works fine
@@ -102,11 +100,24 @@ source ./.venv/bin/activate
 python -m pip install -e .
 ```
 
+To ensure the project can be built for distribution, the `build-check` target in the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) can be used. This project is built with [Flit](https://flit.pypa.io/), a modern minimal build and publishing tool. It can be run locally to ensure the project remains buildable. This target runs `flit build` and `flit install` to build the package and install it locally, then runs `ocsf-schema-compiler -h` to make sure it works.
+```shell
+# Create virtual environment if it doesn't already exist
+python3 -m venv .venv
+# Activate it
+source ./.venv/bin/activate
+# Install Flit
+python -m pip install flit
+
+# Run the build check
+make build-check
+```
+
 ## Continuous integration
-The continuous integration is done via GitHub action in [`.github/workflows/ci.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/ci.yaml). This action uses the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) and runs the `test`, `lint-github`, and `build-check` targets. The `build-check` target is described below. The `lint-github` is a minor variation of the `lint` target with Ruff's GitHub output format option.
+The continuous integration is done via GitHub action in [`.github/workflows/ci.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/ci.yaml). This action uses the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) and runs the `test`, `lint-github`, and `build-check` targets. The `lint-github` is a minor variation of the `lint` target with Ruff's GitHub output format option.
 
 ## Publishing
-Publishing is not a concern for most users. The publishing details are covered in [`docs/publishing.md](https://github.com/ocsf/ocsf-schema-compiler/blob/main/docs/publishing.md).
+Publishing details are covered in [`docs/publishing.md`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/docs/publishing.md).
 
 ## Copyright
 Copyright © OCSF a Series of LF Projects, LLC. See [NOTICE](https://github.com/ocsf/ocsf-schema-compiler/blob/main/NOTICE) for details.
