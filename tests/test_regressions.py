@@ -1,24 +1,35 @@
-import json
 import logging
 import unittest
-from compression import zstd
 from pathlib import Path
 from sys import stderr
+from typing import override
 
-from diff import diff_objects, formatted_diffs, DiffValue, DiffDictKeys, MISSING
+from diff import (  # pyright: ignore[reportImplicitRelativeImport]
+    diff_objects,
+    formatted_diffs,
+    DiffValue,
+    DiffDictKeys,
+    MISSING,
+)
 from ocsf_schema_compiler.compiler import SchemaCompiler
-from ocsf_schema_compiler.jsonish import read_json_object_file, JObject
+from ocsf_schema_compiler.jsonish import JObject
+from ocsf_schema_compiler.structured_read import (
+    read_json_object_file,
+    read_json_object_zstandard_file,
+)
 
 BASE_DIR = Path(__file__).parent
 
 
 class TestRegressions(unittest.TestCase):
     @classmethod
+    @override
     def setUpClass(cls):
         logging.basicConfig(
             format="%(levelname)s: %(message)s", style="%", stream=stderr, level="INFO"
         )
 
+    @override
     def setUp(self):
         print(file=stderr)  # so logs start on new line
 
@@ -31,7 +42,10 @@ class TestRegressions(unittest.TestCase):
             Path(BASE_DIR, "compiled-baselines/schema-v1.6.0.json")
         )
         ok, diffs = diff_objects(schema, baseline_schema)
-        self.assertTrue(ok, f"schema should match baseline:\n{formatted_diffs(diffs)}")
+        self.assertTrue(
+            ok,
+            f"schema (left) should match baseline (right):\n{formatted_diffs(diffs)}",
+        )
         # To make sure diff_objects is implemented correctly, also check with Python
         # equality
         self.assertEqual(schema, baseline_schema, "schema should match baseline")
@@ -41,13 +55,14 @@ class TestRegressions(unittest.TestCase):
             Path(BASE_DIR, "uncompiled-schemas/ocsf-schema-v1.6.0"), browser_mode=True
         )
         schema = compiler.compile()
-
-        p = Path(BASE_DIR, "compiled-baselines/browser-schema-v1.6.0.zst")
-        with zstd.open(p) as f:
-            baseline_schema = json.load(f)
-
+        baseline_schema = read_json_object_zstandard_file(
+            Path(BASE_DIR, "compiled-baselines/browser-schema-v1.6.0.zst")
+        )
         ok, diffs = diff_objects(schema, baseline_schema)
-        self.assertTrue(ok, f"schema should match baseline:\n{formatted_diffs(diffs)}")
+        self.assertTrue(
+            ok,
+            f"schema (left) should match baseline (right):\n{formatted_diffs(diffs)}",
+        )
         # To make sure diff_objects is implemented correctly, also check with Python
         # equality
         self.assertEqual(schema, baseline_schema, "schema should match baseline")
@@ -62,7 +77,10 @@ class TestRegressions(unittest.TestCase):
             Path(BASE_DIR, "compiled-baselines/schema-v1.6.0-aws-v1.0.0.json")
         )
         ok, diffs = diff_objects(schema, baseline_schema)
-        self.assertTrue(ok, f"schema should match baseline:\n{formatted_diffs(diffs)}")
+        self.assertTrue(
+            ok,
+            f"schema (left) should match baseline (right):\n{formatted_diffs(diffs)}",
+        )
         # To make sure diff_objects is implemented correctly, also check with Python
         # equality
         self.assertEqual(schema, baseline_schema, "schema should match baseline")
@@ -78,7 +96,10 @@ class TestRegressions(unittest.TestCase):
             Path(BASE_DIR, "compiled-baselines/schema-v1.0.0-rc.2-splunk-v1.16.2.json")
         )
         ok, diffs = diff_objects(schema, baseline_schema)
-        self.assertTrue(ok, f"schema should match baseline:\n{formatted_diffs(diffs)}")
+        self.assertTrue(
+            ok,
+            f"schema (left) should match baseline (right):\n{formatted_diffs(diffs)}",
+        )
         # To make sure diff_objects is implemented correctly, also check with Python
         # equality
         self.assertEqual(schema, baseline_schema, "schema should match baseline")
@@ -103,7 +124,10 @@ class TestRegressions(unittest.TestCase):
         ok, diffs = diff_objects(
             schema, baseline_schema, diff_callback=legacy_aws_diff_callback
         )
-        self.assertTrue(ok, f"schema should match baseline:\n{formatted_diffs(diffs)}")
+        self.assertTrue(
+            ok,
+            f"schema (left) should match baseline (right):\n{formatted_diffs(diffs)}",
+        )
         # print("Diffs are all expected")
         # for diff in diffs:
         #     print(diff.formatted_string())
@@ -112,8 +136,8 @@ class TestRegressions(unittest.TestCase):
 def legacy_aws_diff_callback(
     key: str,
     path: list[str],
-    left: JObject,
-    right: JObject,
+    _left: JObject,
+    _right: JObject,
     left_diff: DiffValue,
     right_diff: DiffValue,
 ) -> bool:
@@ -199,4 +223,4 @@ def legacy_aws_diff_callback(
 
 
 if __name__ == "__main__":
-    unittest.main()
+    _ = unittest.main()
