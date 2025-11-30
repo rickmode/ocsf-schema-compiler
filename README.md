@@ -37,7 +37,7 @@ source ./.venv/bin/activate
 python -m pip install ocsf-schema-compiler
 ```
 
-The compiler is implemented in the `SchemaCompiler` class. The class constructor the same options as the command-line tool. The class's `compile` method does the heavy lifting, returning a `dict` containing the compiled schema. More specifically, `compiler` returns an `ocsf_schema_compiler.jsonish.JObject`, which is a type alias for JSON-compatible `dict`.
+The compiler is implemented in the `SchemaCompiler` class. The class constructor accepts the same options as the command-line tool. The class's `compile` method does the heavy lifting, returning a `dict` containing the compiled schema. Specifically, `compiler` returns an `ocsf_schema_compiler.jsonish.JObject`, which is a type alias for JSON-compatible `dict`.
 ```python
 from pathlib import Path
 from ocsf_schema_compiler.compiler import SchemaCompiler
@@ -50,9 +50,9 @@ output = compiler.compile()
 See [`ocsf_schema_compiler.__main__`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/src/ocsf_schema_compiler/__main__.py) for a working example.
 
 ## Developing `ocsf-schema-compiler`
-The recommended way to work on OCSF projects is via a fork into your own GitHub profile or organization. Create your fork of [this repo](https://github.com/ocsf/ocsf-schema-compiler) with the [GitHub CLI](https://cli.github.com/) tool (or, more painfully, manually).
+The recommended way to work on OCSF projects is to create fork in your own GitHub profile or organization. Create your fork of [this repo](https://github.com/ocsf/ocsf-schema-compiler) using the [GitHub CLI](https://cli.github.com/) tool (or, more painfully, manually).
 
-This project requires Python 3.14 or later, and otherwise has no runtime dependencies. This mean you can run it directly from a cloned repo's `src` directory without creating a virtual environment.
+This project requires **Python 3.14 or later**; otherwise, it has no runtime dependencies. This means you can run it directly from a cloned repo's `src` directory without creating a virtual environment.
 
 ```shell
 cd path/to/ocsf-schema-compiler
@@ -60,20 +60,20 @@ cd src
 python3 -m ocsf_schema_compiler ~/path/to/ocsf-schema > ~/path/to/output/schema.json
 ```
 
-This project has regression tests in the `tests` directory built using the `unittest` library. These also can be run without a virtual environment so long as `python3` refers to Python 3.14 or later. The tests can be run with the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) target `tests`.
+This project includes regression tests in the `tests` directory, built using the `unittest` library. These can also be run without a virtual environment so long as `python3` refers to **Python 3.14 or later**. The tests can be run with the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) target `tests`.
 ```shell
 make tests
 ```
 
 This project uses [basedpyright](https://docs.basedpyright.com/latest/) for type checking and [Ruff](https://docs.astral.sh/ruff/) for linting and code formatting.
 
-Basedpyright was picked as an alternative to Pylance because I'm using the open-source and telemetry-free [VSCodium](https://vscodium.com/) variation of VS Code, and the Microsoft proprietary Pylance extension (part of the Python extension) does not work in VSCodium by design. Basedpyright also offers other benefits: it is strict by default and includes additional type checking rules. Extensions are available for both VSCodium and VS Code; in both cases look for "BasedPyright" by detachhead. Use in VS Code does take a little more work. I hope Pyright fans and especially VS Code users will find this workable, and perhaps consider using the privacy-focused VSCodium themselves.
+Basedpyright was picked as an alternative to Pylance because I'm using the open-source and telemetry-free [VSCodium](https://vscodium.com/) variation of VS Code. The Microsoft-proprietary Pylance extension (part of the Python extension) does not work in VSCodium by design. Basedpyright also offers other benefits: it is strict by default and includes additional type checking rules. Extensions are available for both VSCodium and VS Code; in both cases look for **"BasedPyright"** by detachhead. However, use in VS Code does take a little more work. I hope Pyright fans and especially VS Code users will find this workable, and perhaps consider using the privacy-focused VSCodium themselves.
 
-The choice of Ruff should be less controversial: it is the current favorite for Python linting and code formatting. The formatting is very similar to [Black](https://black.readthedocs.io/en/stable/) with some minor differences (improvements, in my opinion).
+The choice of Ruff should be less controversial: it is the current favorite for Python linting and code formatting. The formatting is very similar to [Black](https://black.readthedocs.io/en/stable/) with some minor differences (which I consider improvements).
 
-Use of these tools require a virtual environment. With the virtual environment activated, the linting and formatting can be run with the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) target `lint`.
+Use of these tools requires a virtual environment. With the virtual environment activated, the linting and formatting can be run with the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) target `lint`.
 
-Integrating basedpyright and Ruff with your editor is recommended. In both cases, these tools will pick up the configuration in this project's [`pyproject.toml` file](https://github.com/ocsf/ocsf-schema-compiler/blob/main/pyproject.toml).
+Integrating basedpyright and Ruff with your editor is recommended. In both cases, these tools will pick up the configuration in this project's [`pyproject.toml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/pyproject.toml) file.
 * [Editor integration | Ruff](https://docs.astral.sh/ruff/editors/)
 * [IDEs - basedpyright](https://docs.basedpyright.com/latest/installation/ides/)
 
@@ -91,7 +91,7 @@ python -m pip install basedpyright ruff
 make lint
 ```
 
-Also with a virtual environment, a local install can be used to run the compiler.
+Also, with a virtual environment, a local install can be used to run the compiler.
 ```shell
 # A standard Python virtual environment works fine
 python3 -m venv .venv
@@ -100,7 +100,7 @@ source ./.venv/bin/activate
 python -m pip install -e .
 ```
 
-To ensure the project can be built for distribution, the `build-check` target in the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) can be used. This project is built with [Flit](https://flit.pypa.io/), a modern minimal build and publishing tool. It can be run locally to ensure the project remains buildable. This target runs `flit build` and `flit install` to build the package and install it locally, then runs `ocsf-schema-compiler -h` to make sure it works.
+To ensure the project can be built for distribution, the `build-check` target in the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) can be used. This project is built with [Flit](https://flit.pypa.io/), a modern minimal build and publishing tool. It can be run locally to ensure the project remains buildable. This target runs `flit build` and `flit install` to build the package and install it locally, and then runs `ocsf-schema-compiler -h` to verify it works.
 ```shell
 # Create virtual environment if it doesn't already exist
 python3 -m venv .venv
