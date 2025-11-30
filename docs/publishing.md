@@ -15,7 +15,7 @@ The version is defined in the `__version__` variable in [`src/ocsf_schema_compil
 Updating the version requires a normal pull request.
 
 ## Publishing step 2 (optional): create git tag
-A Git tag must be created with the same version with a "v" prefix. This can be created during a release or beforehand via `git` on the command line or with a draft release.
+A Git tag must be created with the same version with a "v" prefix. This can be created during a release or beforehand via `git` on the command line.
 
 Creating a tag before release can be used to manually publish to TestPyPI at [ocsf-schema-compiler · TestPyPI](https://test.pypi.org/project/ocsf-schema-compiler/) using this repo's "Test publish package to TestPyPI" GitHub action defined in [`.github/workflows/test-publish.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/test-publish.yaml). The test-publish action requires the `testpypi` GitHub environment.
 
@@ -32,8 +32,6 @@ git push origin v1.0.0
 # Alternately all tags can be pushed
 git push origin --tags
 ```
-
-To create draft release with a new tag, go to this repo's [Releases](https://github.com/ocsf/ocsf-schema-compiler/releases) page, click "Create a new release", enter a new tag in the "Select tag" box, and finally click "Save draft" (rather than "Publish release").
 
 ## Publishing step 3: release
 Create a new release with a tag or select a draft release on the [Releases](https://github.com/ocsf/ocsf-schema-compiler/releases) page, then click "Publish release". This will trigger the GitHub action in [`.github/workflows/publish.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/publish.yaml) that publishes the package to PyPI. The publish action requires the `pypi` GitHub environment.
