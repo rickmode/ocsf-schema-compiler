@@ -14,7 +14,7 @@ The version is defined in the `__version__` variable in [`src/ocsf_schema_compil
 
 Updating the version requires a normal pull request.
 
-## Publishing step 2 (optional): create git tag and test
+## Publishing step 2 (optional): create git tag and test publish
 A Git tag must be created with the same version with a "v" prefix. This can be created during a release or beforehand via `git` on the command line.
 
 Creating a tag before release allows us to manually publish to TestPyPI at [ocsf-schema-compiler · TestPyPI](https://test.pypi.org/project/ocsf-schema-compiler/) using this repo's "Test publish package to TestPyPI" GitHub action defined in [`.github/workflows/test-publish.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/test-publish.yaml). The test-publish action requires the `testpypi` GitHub environment.
