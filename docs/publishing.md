@@ -1,4 +1,4 @@
-# Publishing **ocsf-schema-compiler**
+# Publishing ocsf-schema-compiler
 This project publishes the **ocsf-schema-compiler** package to PyPI. We can also manually publish to TestPyPI.
 
 This project uses [Flit](https://flit.pypa.io/) to build package distributions, but not for publishing. Publishing is done via GitHub releases, utilizing the [pypa/gh-action-pypi-publish](https://github.com/pypa/gh-action-pypi-publish) action.
@@ -62,7 +62,7 @@ make build-check
 
 The pre-publishing checks require the project's version to be updated, and the related Git tag exists. The check is run with the `pre-publish-check` target in the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile). This target runs the [`scripts/pre-publish-check.sh`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/scripts/pre-publish-check.sh) script, which requires a virtual environment.
 
-This check downloads the latest release of **ocsf-schema-compiler** from PyPI, so you will likely want to remove the virtual environment afterwards.
+This check installs the latest release of **ocsf-schema-compiler** from PyPI, so you will likely want to remove the virtual environment afterwards. The `pre-test-publish-check` target work the same, though installs from TestPyPI.
 
 ```shell
 # Create virtual environment if it doesn't already exist

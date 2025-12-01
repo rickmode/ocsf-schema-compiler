@@ -11,7 +11,7 @@ There are three ways to use the OCSF Schema Compiler:
 
 Python version 3.14 or later is required. The core project code does not require any dependencies, though optional developer dependencies are used (see below).
 
-## Using **ocsf-schema-compiler** as a command-line tool
+## Using ocsf-schema-compiler as a command-line tool
 Create a virtual environment then install with `pip`. For example:
 ```shell
 python3 -m venv .venv
@@ -29,7 +29,7 @@ The basic usage is passing the base directory of a schema to the compiler and ca
 ocsf-schema-compiler path/to/ocsf-schema > schema.json
 ```
 
-## Using **ocsf-schema-compiler** as a library
+## Using ocsf-schema-compiler as a library
 Create a virtual environment then install with `pip`. For example:
 ```shell
 python3 -m venv .venv
@@ -49,7 +49,7 @@ output = compiler.compile()
 
 See [`ocsf_schema_compiler.__main__`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/src/ocsf_schema_compiler/__main__.py) for a working example.
 
-## Developing **ocsf-schema-compiler**
+## Developing ocsf-schema-compiler
 The recommended way to work on OCSF projects is to create fork in your own GitHub profile or organization. Create your fork of [this repo](https://github.com/ocsf/ocsf-schema-compiler) using the [GitHub CLI](https://cli.github.com/) tool (or, more painfully, manually).
 
 This project requires **Python 3.14 or later**; otherwise, it has no runtime dependencies. This means you can run it directly from a cloned repo's `src` directory without creating a virtual environment.
