@@ -1,7 +1,7 @@
 # OCSF Schema Compiler
 This is a Python library and command-line tool for compiling the Open Cybersecurity Schema Framework (OCSF) schema, specifically the schema at https://github.com/ocsf/ocsf-schema.
 
-This project published to PyPI: [ocsf-schema-compiler · PyPI](https://pypi.org/project/ocsf-schema-compiler/).
+This project is published to PyPI: [ocsf-schema-compiler · PyPI](https://pypi.org/project/ocsf-schema-compiler/).
 
 ## Getting started
 There are three ways to use the OCSF Schema Compiler:
@@ -11,7 +11,7 @@ There are three ways to use the OCSF Schema Compiler:
 
 Python version 3.14 or later is required. The core project code does not require any dependencies, though optional developer dependencies are used (see below).
 
-## Using `ocsf-schema-compiler` as a command-line tool
+## Using **ocsf-schema-compiler** as a command-line tool
 Create a virtual environment then install with `pip`. For example:
 ```shell
 python3 -m venv .venv
@@ -29,7 +29,7 @@ The basic usage is passing the base directory of a schema to the compiler and ca
 ocsf-schema-compiler path/to/ocsf-schema > schema.json
 ```
 
-## Using `ocsf-schema-compiler` as a library
+## Using **ocsf-schema-compiler** as a library
 Create a virtual environment then install with `pip`. For example:
 ```shell
 python3 -m venv .venv
@@ -49,7 +49,7 @@ output = compiler.compile()
 
 See [`ocsf_schema_compiler.__main__`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/src/ocsf_schema_compiler/__main__.py) for a working example.
 
-## Developing `ocsf-schema-compiler`
+## Developing **ocsf-schema-compiler**
 The recommended way to work on OCSF projects is to create fork in your own GitHub profile or organization. Create your fork of [this repo](https://github.com/ocsf/ocsf-schema-compiler) using the [GitHub CLI](https://cli.github.com/) tool (or, more painfully, manually).
 
 This project requires **Python 3.14 or later**; otherwise, it has no runtime dependencies. This means you can run it directly from a cloned repo's `src` directory without creating a virtual environment.
@@ -67,7 +67,7 @@ make tests
 
 This project uses [basedpyright](https://docs.basedpyright.com/latest/) for type checking and [Ruff](https://docs.astral.sh/ruff/) for linting and code formatting.
 
-Basedpyright was picked as an alternative to Pylance because I'm using the open-source and telemetry-free [VSCodium](https://vscodium.com/) variation of VS Code. The Microsoft-proprietary Pylance extension (part of the Python extension) does not work in VSCodium by design. Basedpyright also offers other benefits: it is strict by default and includes additional type checking rules. Extensions are available for both VSCodium and VS Code; in both cases look for **"BasedPyright"** by detachhead. However, use in VS Code does take a little more work. I hope Pyright fans and especially VS Code users will find this workable, and perhaps consider using the privacy-focused VSCodium themselves.
+Basedpyright was picked as an alternative to Pylance because I'm using the open-source and telemetry-free [VSCodium](https://vscodium.com/) variation of VS Code. The Microsoft-proprietary Pylance extension (part of the Python extension) does not work in VSCodium by design. Basedpyright also offers other benefits: it is strict by default and includes additional type checking rules. Extensions are available for both VSCodium and VS Code; in both cases look for **"BasedPyright"** by detachhead. Use in VS Code does, however, take a little more work. I hope Pyright fans — and especially VS Code users — will find this workable, and perhaps consider using the privacy-focused VSCodium themselves.
 
 The choice of Ruff should be less controversial: it is the current favorite for Python linting and code formatting. The formatting is very similar to [Black](https://black.readthedocs.io/en/stable/) with some minor differences (which I consider improvements).
 
@@ -114,7 +114,7 @@ make build-check
 ```
 
 ## Continuous integration
-The continuous integration is done via GitHub action in [`.github/workflows/ci.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/ci.yaml). This action uses the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) and runs the `test`, `lint-github`, and `build-check` targets. The `lint-github` is a minor variation of the `lint` target with Ruff's GitHub output format option.
+The continuous integration is done via a GitHub action in [`.github/workflows/ci.yaml`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/.github/workflows/ci.yaml). This action uses the [`Makefile`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/Makefile) targets `test`, `lint-github`, and `build-check`. (The `lint-github` target is a minor variation of the `lint` target with Ruff's GitHub output format option.)
 
 ## Publishing
 Publishing details are covered in [`docs/publishing.md`](https://github.com/ocsf/ocsf-schema-compiler/blob/main/docs/publishing.md).
